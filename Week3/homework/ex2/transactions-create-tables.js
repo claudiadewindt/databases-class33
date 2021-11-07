@@ -37,29 +37,20 @@ db.query('USE bank', execQuery);
 const account =
   'CREATE TABLE IF NOT EXISTS account(account_number INT PRIMARY KEY, balance NUMERIC(10,2))';
 
-const account_changes =
-  'CREATE TABLE IF NOT EXISTS account_changes(change_number INT PRIMARY KEY,account_number INT,amount NUMERIC(10,2) , changed_date DATE, remark TEXT,FOREIGN KEY(account_number) REFERENCES account(account_number)) ';
+const account_changes = `CREATE TABLE IF NOT EXISTS account_changes(change_number INT PRIMARY KEY, account_number INT,
+   amount NUMERIC(10,2), changed_date DATE, remark TEXT, FOREIGN KEY(account_number) REFERENCES account(account_number));`;
 
 // Create account table
-db.query(account, execQuery);
-
-//  Create account changes
-db.query(account_changes, execQuery);
-
-// Data inserted
-db.query(INSERT_INTO_ACCOUNT, execQuery);
-
-db.query(INSERT_ACCOUNT_CHANGES, execQuery);
-
-// Data transferred
-db.query(START_TRANSACTION, execQuery);
-
-db.query(MINUS_AMOUNT, execQuery);
-
-db.query(PLUS_AMOUNT, execQuery);
-
-db.query(COMMIT, execQuery);
-
-db.query(ROLLBACK, execQuery);
-
-db.end();
+//you could have used async-await promisify for these queries.
+(async () => {
+  await db.query(account, execQuery);
+  await db.query(account_changes, execQuery);
+  await db.query(INSERT_INTO_ACCOUNT, execQuery);
+  await db.query(INSERT_ACCOUNT_CHANGES, execQuery);
+  await db.query(START_TRANSACTION, execQuery);
+  await db.query(MINUS_AMOUNT, execQuery);
+  await db.query(PLUS_AMOUNT, execQuery);
+  await db.query(COMMIT, execQuery);
+  await db.query(ROLLBACK, execQuery);
+  db.end();
+})();

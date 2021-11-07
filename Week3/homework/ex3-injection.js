@@ -6,11 +6,12 @@ const conn = mysql.createConnection({
   user: 'hyfuser',
   password: 'hyfpassword',
   database: 'new_world',
+  multipleStatements: true,
 });
 
 const execQuery = util.promisify(conn.query.bind(conn));
 
-async function getPopulation(Country, name, code, cb) {
+async function getPopulation(Country, name, code, log) {
   conn.connect();
 
   try {
@@ -24,13 +25,14 @@ async function getPopulation(Country, name, code, cb) {
     ]);
 
     if (result[3].length < 1) {
-      cb(new Error('Not found'));
+      log(new Error('Not found'));
     }
     console.log(result[3][0].Population);
 
     conn.end();
   } catch (err) {
-    cb(err);
+    log(err);
+    conn.end();
   }
 }
 
